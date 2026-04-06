@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\mods.props" />
+    <PropertyGroup>
+        <AssemblyName>SiroccoMod.Chat</AssemblyName>
+    </PropertyGroup>
+</Project>

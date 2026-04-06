@@ -1,0 +1,45 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\SiroccoMod.csproj">
+            <Private>False</Private>
+        </ProjectReference>
+        <Reference Include="MelonLoader">
+            <HintPath>..\..\src\lib\MelonLoader.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="0Harmony">
+            <HintPath>..\..\src\lib\0Harmony.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Il2CppInterop.Runtime">
+            <HintPath>..\..\src\lib\Il2CppInterop.Runtime.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Il2CppInterop.Common">
+            <HintPath>..\..\src\lib\Il2CppInterop.Common.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Il2Cppmscorlib">
+            <HintPath>..\..\src\lib\Il2Cppmscorlib.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>..\..\src\lib\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+
+    <Target Name="CopyToGame" AfterTargets="Build" Condition="Exists('$(GAME_INSTALL_PATH)/Mods')">
+        <Copy SourceFiles="$(TargetPath)"
+            DestinationFolder="$(GAME_INSTALL_PATH)/Mods/"
+            SkipUnchangedFiles="true" />
+        <Message Text="Copied $(AssemblyName) to: $(GAME_INSTALL_PATH)/Mods/" Importance="high" />
+    </Target>
+</Project>
