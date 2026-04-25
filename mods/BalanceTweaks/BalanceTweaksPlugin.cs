@@ -152,7 +152,7 @@ namespace SiroccoMod.Mods.BalanceTweaks
         };
 
         // Overloaded Weapons TypeID for special handling
-        private const int OverloadedWeaponsTypeId = 40;
+        private const int OverloadedWeaponsTypeId = 13;
 
         // ================================================================
         // Stat enum
@@ -493,13 +493,12 @@ namespace SiroccoMod.Mods.BalanceTweaks
                                 incProp.SetValue(card, 0);
                                 MelonLogger.Msg($"[BalanceTweaks]   Stat{slot} (WeaponReloadAmount): {currentInc} -> 0");
                                 break;
-                            case 2: // WeaponFireRate (reload time) — reduce to ~10% penalty
-                                // Current is +90% reload time. Option B wants +10%.
-                                // Scale: 10/90 ≈ 0.111
+                            case 34: // LegendaryWeaponReloadDecrease — reduce penalty
+                                // Current is 12. Option B wants ~10% of that.
                                 int newRate = (int)Math.Round(currentInc * (10.0 / 90.0));
                                 if (newRate < 1) newRate = 1;
                                 incProp.SetValue(card, newRate);
-                                MelonLogger.Msg($"[BalanceTweaks]   Stat{slot} (WeaponFireRate): {currentInc} -> {newRate}");
+                                MelonLogger.Msg($"[BalanceTweaks]   Stat{slot} (LegendaryWeaponReloadDecrease): {currentInc} -> {newRate}");
                                 break;
                         }
                     }
