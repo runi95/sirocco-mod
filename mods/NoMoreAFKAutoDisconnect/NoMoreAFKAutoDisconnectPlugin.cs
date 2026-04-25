@@ -11,7 +11,7 @@ namespace SiroccoMod.Mods.NoMoreAFKAutoDisconnect
 {
     /// <summary>
     /// Prevents the client-side AFK detection from kicking the player.
-    /// Patches IsLocalPlayerAfk to always report the player as active.
+    /// Patches EnableAfkChecking to prevent AFK checking from ever being enabled.
     /// </summary>
     public class NoMoreAFKAutoDisconnectPlugin : MelonMod
     {
@@ -33,22 +33,20 @@ namespace SiroccoMod.Mods.NoMoreAFKAutoDisconnect
                 return;
             }
 
-            var method = type.GetMethod("IsLocalPlayerAfk", HarmonyPatcher.FLAGS);
+            var method = type.GetMethod("EnableAfkChecking", HarmonyPatcher.FLAGS);
             if (method == null)
             {
-                MelonLogger.Warning("[NoMoreAFKAutoDisconnect] IsLocalPlayerAfk not found");
+                MelonLogger.Warning("[NoMoreAFKAutoDisconnect] EnableAfkChecking not found");
                 return;
             }
 
-            var prefix = new HarmonyLib.HarmonyMethod(typeof(NoMoreAFKAutoDisconnectPlugin), nameof(Prefix));
+            var prefix = new HarmonyLib.HarmonyMethod(typeof(NoMoreAFKAutoDisconnectPlugin), nameof(Prefix_EnableAfkChecking));
             HarmonyInstance.Patch(method, prefix: prefix);
             MelonLogger.Msg("[NoMoreAFKAutoDisconnect] Installed – AFK kick disabled");
         }
 
-        private static bool Prefix(ref bool __result, ref float AFKTime)
+        private static bool Prefix_EnableAfkChecking()
         {
-            __result = false;
-            AFKTime = 0f;
             return false;
         }
     }
