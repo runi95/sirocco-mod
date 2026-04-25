@@ -443,56 +443,12 @@ namespace SiroccoMod.Mods.Skins
                         skinDataType.GetProperty("UsesColorPalette", HarmonyPatcher.FLAGS)?.SetValue(skinData, true);
                         skinDataType.GetProperty("SkinColorPaletteData", HarmonyPatcher.FLAGS)?.SetValue(skinData, palette);
                         skinDataType.GetProperty("SkinSubElementAppliedData", HarmonyPatcher.FLAGS)?.SetValue(skinData, subElemArr);
+                        // Don't include mesh swaps in OldUnitySkinData — ApplyMeshSwap destroys
+                        // MeshSwapBaseObjects after each swap, and the game's preset skin deck
+                        // (SkinAllPlayableShipSkinsWithPresetSkinDeck) also applies mesh swaps.
+                        // Setting HasMeshSwaps here would consume the base objects before the
+                        // preset deck runs, causing "TargetPartID not found" errors.
                         var meshSwapDataType = asm!.GetType("Il2CppWartide.MeshSwapData");
-                        if (meshSwapDataType != null && sampanMeshSwaps.Count > 0)
-                        {
-                            // Pick ONE random mesh swap per unique slot ID
-                            // Multiple swaps for the same slot cause "TargetPartID not found"
-                            // because the first swap replaces the part the second is looking for.
-                            var bySlot = new Dictionary<int, List<object>>();
-                            foreach (var ms in sampanMeshSwaps)
-                            {
-                                int sid = -1;
-                                try { sid = (int)(ms.GetType().GetProperty("MeshSwapSlotID", HarmonyPatcher.FLAGS)?.GetValue(ms) ?? -1); } catch { }
-                                if (!bySlot.ContainsKey(sid)) bySlot[sid] = new();
-                                bySlot[sid].Add(ms);
-                            }
-
-                            // For each slot, randomly pick one (or skip the slot randomly)
-                            var shuffled = new List<object>();
-                            var shuffledSlotIds = new List<int>();
-                            foreach (var (slotId, options) in bySlot)
-                            {
-                                // 50% chance to include a mesh swap for each slot
-                                if (rng.NextDouble() < 0.5)
-                                {
-                                    shuffled.Add(options[rng.Next(options.Count)]);
-                                    shuffledSlotIds.Add(slotId);
-                                }
-                            }
-
-                            var meshArrType = typeof(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<>).MakeGenericType(meshSwapDataType);
-                            var meshArr = meshArrType.GetConstructor(new[] { typeof(long) })!.Invoke(new object[] { (long)shuffled.Count });
-                            var meshArrItem = meshArrType.GetProperty("Item");
-
-                            var msNames = new string[shuffled.Count];
-                            for (int mi = 0; mi < shuffled.Count; mi++)
-                            {
-                                var msd = meshSwapDataType.GetConstructor(Type.EmptyTypes)!.Invoke(null);
-                                meshSwapDataType.GetProperty("MeshSwapDataContainer", HarmonyPatcher.FLAGS)?.SetValue(msd, shuffled[mi]);
-                                meshArrItem!.SetValue(meshArr, msd, new object[] { mi });
-
-                                msNames[mi] = shuffled[mi].GetType().GetProperty("name", HarmonyPatcher.FLAGS)?.GetValue(shuffled[mi])?.ToString() ?? "";
-                                MelonLogger.Msg($"[SkinApply]   MeshSwap[{mi}]: '{msNames[mi]}'");
-                            }
-
-                            psi.MeshSwapUniversalIDs = msNames;
-                            psi.MeshSwapSlotIDs = shuffledSlotIds.ToArray();
-
-                            skinDataType.GetProperty("HasMeshSwaps", HarmonyPatcher.FLAGS)?.SetValue(skinData, true);
-                            skinDataType.GetProperty("MeshSwaps", HarmonyPatcher.FLAGS)?.SetValue(skinData, meshArr);
-                        }
-                        else
                         {
                             skinDataType.GetProperty("HasMeshSwaps", HarmonyPatcher.FLAGS)?.SetValue(skinData, false);
                             if (meshSwapDataType != null)

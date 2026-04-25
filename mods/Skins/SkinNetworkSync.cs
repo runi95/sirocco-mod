@@ -376,23 +376,13 @@ namespace SiroccoMod.Mods.Skins
                         eidItem!.SetValue(seidArr, SkinGenerator.TranslateToGuid(psi.SubElementUniversalIDs[j], guidMap), new object[] { j });
                     nsdType.GetProperty("SubElementUniversalIDs", HarmonyPatcher.FLAGS)?.SetValue(nsd, seidArr);
 
-                    // MeshSwaps — translate names to GUIDs
-                    nsdType.GetProperty("MeshSwapCount", HarmonyPatcher.FLAGS)?.SetValue(nsd, psi.MeshSwapUniversalIDs.Length);
-                    var msIdArr = stringArrType.GetConstructor(new[] { typeof(long) })!.Invoke(new object[] { (long)psi.MeshSwapUniversalIDs.Length });
-                    for (int j = 0; j < psi.MeshSwapUniversalIDs.Length; j++)
-                        eidItem!.SetValue(msIdArr, SkinGenerator.TranslateToGuid(psi.MeshSwapUniversalIDs[j], guidMap), new object[] { j });
-                    nsdType.GetProperty("MeshSwapUniversalIDs", HarmonyPatcher.FLAGS)?.SetValue(nsd, msIdArr);
-
-                    // SlotIDs
-                    if (slotIdArrType != null && psi.MeshSwapSlotIDs.Length > 0)
-                    {
-                        var slotArr = slotIdArrType.GetConstructor(new[] { typeof(long) })!.Invoke(new object[] { (long)psi.MeshSwapSlotIDs.Length });
-                        var slotItem = slotIdArrType.GetProperty("Item");
-                        for (int j = 0; j < psi.MeshSwapSlotIDs.Length; j++)
-                            slotItem!.SetValue(slotArr, Enum.ToObject(slotIdEnumType!, psi.MeshSwapSlotIDs[j]), new object[] { j });
-                        nsdType.GetProperty("SlotIDs", HarmonyPatcher.FLAGS)?.SetValue(nsd, slotArr);
-                    }
-                    else if (slotIdArrType != null)
+                    // MeshSwaps — leave empty so the equipped skin coroutine doesn't consume
+                    // MeshSwapBaseObjects; the game's preset skin deck handles mesh swaps separately
+                    // and ApplyMeshSwap destroys the base object after each swap, preventing reuse.
+                    nsdType.GetProperty("MeshSwapCount", HarmonyPatcher.FLAGS)?.SetValue(nsd, 0);
+                    nsdType.GetProperty("MeshSwapUniversalIDs", HarmonyPatcher.FLAGS)?.SetValue(nsd,
+                        stringArrType.GetConstructor(new[] { typeof(long) })!.Invoke(new object[] { 0L }));
+                    if (slotIdArrType != null)
                     {
                         nsdType.GetProperty("SlotIDs", HarmonyPatcher.FLAGS)?.SetValue(nsd,
                             slotIdArrType.GetConstructor(new[] { typeof(long) })!.Invoke(new object[] { 0L }));
