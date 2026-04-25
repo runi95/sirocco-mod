@@ -45,9 +45,10 @@ namespace SiroccoMod.Mods.NoMoreAFKAutoDisconnect
             MelonLogger.Msg("[NoMoreAFKAutoDisconnect] Installed – AFK kick disabled");
         }
 
-        private static bool Prefix(ref bool __result)
+        private static bool Prefix(ref bool __result, ref float AFKTime)
         {
             __result = false;
+            AFKTime = 0f;
             return false;
         }
     }
