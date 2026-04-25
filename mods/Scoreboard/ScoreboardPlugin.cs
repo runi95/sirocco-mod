@@ -61,7 +61,7 @@ namespace SiroccoMod.Mods.Scoreboard
             MelonLogger.Msg("[ScoreboardResponse] Patched OnServerRequestMatchInfo");
         }
 
-        public static bool Prefix_OnServerRequestMatchInfo(object __instance, object conn)
+        public static bool Prefix_OnServerRequestMatchInfo(object __instance, object __0)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace SiroccoMod.Mods.Scoreboard
                 SetAccountIDs(responseType, response, slots);
 
                 // Send via conn.Send<ResponseMatchInfoMessage>
-                if (!SendResponse(conn, responseType, response))
+                if (!SendResponse(__0, responseType, response))
                     return true; // fall through to native on failure
 
                 // Update PreloadData.SetTargetConnectionCount
