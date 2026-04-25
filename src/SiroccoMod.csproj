@@ -34,10 +34,10 @@
         </Reference>
     </ItemGroup>
 
-    <Target Name="CopyToGame" AfterTargets="Build" Condition="Exists('$(GAME_INSTALL_PATH)/Mods')">
+    <Target Name="CopyToGame" AfterTargets="Build" Condition="Exists('$(GAME_INSTALL_PATH)/UserLibs')">
         <Copy SourceFiles="$(TargetPath)"
-            DestinationFolder="$(GAME_INSTALL_PATH)/Mods/"
+            DestinationFolder="$(GAME_INSTALL_PATH)/UserLibs/"
             SkipUnchangedFiles="true" />
-        <Message Text="Copied shared lib to: $(GAME_INSTALL_PATH)/Mods/" Importance="high" />
+        <Message Text="Copied shared lib to: $(GAME_INSTALL_PATH)/UserLibs/" Importance="high" />
     </Target>
 </Project>
